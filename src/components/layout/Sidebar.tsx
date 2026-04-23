@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { signOut } from "next-auth/react";
+import { useClerk } from "@clerk/nextjs";
 import { useState } from "react";
 import {
   LayoutDashboard,
@@ -74,6 +74,7 @@ function SidebarContent({
   collapsed,
   onToggle,
 }: SidebarProps & { collapsed: boolean; onToggle?: () => void }) {
+  const { signOut } = useClerk();
   const filteredItems = navItems.filter(
     (item) => !item.roles || item.roles.includes(user.role)
   );
@@ -142,7 +143,7 @@ function SidebarContent({
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => signOut({ callbackUrl: "/login" })}
+            onClick={() => signOut({ redirectUrl: "/sign-in" })}
             className="h-8 w-8 text-slate-500 hover:text-red-600"
             title="Sign out"
           >

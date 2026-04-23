@@ -1,25 +1,17 @@
-import { auth } from "@/lib/auth";
+import { getCurrentUser } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { Header } from "@/components/layout/Header";
 import { QueryProvider } from "@/components/providers/QueryProvider";
 import { MuiThemeProvider } from "@/components/providers/MuiThemeProvider";
-import type { UserRole } from "@/types";
 
 export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const session = await auth();
-  if (!session?.user) redirect("/login");
-
-  const user = {
-    name: session.user.name,
-    email: session.user.email,
-    image: session.user.image,
-    role: (session.user.role ?? "staff") as UserRole,
-  };
+  const user = await getCurrentUser();
+  if (!user) redirect("/sign-in");
 
   return (
     <QueryProvider>
