@@ -407,15 +407,6 @@ export function NotesTab({ patientId }: { patientId: string }) {
 
   return (
     <div className="space-y-4">
-      <Button
-        variant="outline"
-        className="w-full justify-start text-muted-foreground"
-        onClick={() => setSheetOpen(true)}
-      >
-        <StickyNote className="mr-2 h-4 w-4" />
-        Add a note…
-      </Button>
-
       <AddNoteSheet
         patientId={patientId}
         open={sheetOpen}
@@ -426,10 +417,18 @@ export function NotesTab({ patientId }: { patientId: string }) {
         <EmptyState
           icon={<StickyNote className="h-12 w-12" />}
           title="No notes yet"
-          description="Add your first note above to start documenting patient interactions."
+          description="Add your first note to start documenting patient interactions."
+          actionLabel="Add Note"
+          onAction={() => setSheetOpen(true)}
         />
       ) : (
         <div className="space-y-6">
+          <div className="flex justify-end">
+            <Button size="sm" onClick={() => setSheetOpen(true)}>
+              <StickyNote className="mr-2 h-4 w-4" />
+              Add Note
+            </Button>
+          </div>
           {/* Pinned section */}
           {pinnedNotes.length > 0 && (
             <div className="space-y-3">
