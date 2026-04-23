@@ -244,6 +244,32 @@ export interface PaginatedResponse<T> {
 }
 
 // ============================================
+// Patient Notes types (mock backend — swap to real endpoint later)
+// ============================================
+
+export type NoteCategory = "clinical" | "pharmacy" | "follow-up" | "general";
+
+export interface PatientNote {
+  id: string;
+  patientId: string;
+  content: string;
+  category: NoteCategory;
+  isPinned: boolean;
+  authorName: string;
+  authorRole: "admin" | "doctor" | "staff";
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface PatientNotesResponse {
+  success: boolean;
+  data: {
+    patientId: string;
+    notes: PatientNote[];
+  };
+}
+
+// ============================================
 // Session types
 // ============================================
 

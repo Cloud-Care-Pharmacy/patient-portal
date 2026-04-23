@@ -14,6 +14,9 @@ export default function PatientsPage() {
   return (
     <div className="space-y-6">
       <PageHeader title="Patients" />
+      <p className="text-sm text-muted-foreground -mt-4">
+        Manage your patients and their intake records here.
+      </p>
       <ErrorBoundary>
         {isLoading ? (
           <div className="space-y-3">

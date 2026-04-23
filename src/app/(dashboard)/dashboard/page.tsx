@@ -1,110 +1,130 @@
 "use client";
 
-import Link from "next/link";
+import { TrendingUp, TrendingDown } from "lucide-react";
 import {
-  Users,
-  FileText,
-  Calendar,
-  TrendingUp,
-  Plus,
-  ClipboardPlus,
-} from "lucide-react";
-import { DataGrid, type GridColDef } from "@mui/x-data-grid";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import type { RecentActivity, DashboardStats } from "@/types";
-
-const mockStats: DashboardStats = {
-  totalPatients: 127,
-  pendingConsultations: 8,
-  activePrescriptions: 43,
-  newThisWeek: 5,
-};
-
-const mockActivity: RecentActivity[] = [
-  { id: "1", action: "Patient intake completed", patientName: "John Smith", timestamp: new Date(Date.now() - 1000 * 60 * 30).toISOString(), user: "Dr. Sarah Chen" },
-  { id: "2", action: "Prescription issued", patientName: "Maria Garcia", timestamp: new Date(Date.now() - 1000 * 60 * 120).toISOString(), user: "Dr. James Wilson" },
-  { id: "3", action: "Consultation scheduled", patientName: "David Lee", timestamp: new Date(Date.now() - 1000 * 60 * 240).toISOString(), user: "Staff – Emily Davis" },
-  { id: "4", action: "Patient flagged for review", patientName: "Anna Brown", timestamp: new Date(Date.now() - 1000 * 60 * 360).toISOString(), user: "Dr. Sarah Chen" },
-  { id: "5", action: "Document uploaded", patientName: "Tom Wilson", timestamp: new Date(Date.now() - 1000 * 60 * 480).toISOString(), user: "Staff – Mark Johnson" },
-];
-
-const activityColumns: GridColDef<RecentActivity>[] = [
-  { field: "action", headerName: "Action", flex: 1, minWidth: 180 },
-  { field: "patientName", headerName: "Patient", flex: 1, minWidth: 140 },
-  { field: "user", headerName: "By", flex: 1, minWidth: 140 },
-  {
-    field: "timestamp",
-    headerName: "Time",
-    width: 160,
-    valueFormatter: (value: string) =>
-      new Date(value).toLocaleString("en-AU", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" }),
-  },
-];
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Overview } from "@/components/dashboard/Overview";
+import { RecentActivity } from "@/components/dashboard/RecentActivity";
 
 const statCards = [
-  { title: "Total Patients", value: mockStats.totalPatients, icon: Users, color: "text-blue-600", bg: "bg-blue-50" },
-  { title: "Pending Consultations", value: mockStats.pendingConsultations, icon: Calendar, color: "text-yellow-600", bg: "bg-yellow-50" },
-  { title: "Active Prescriptions", value: mockStats.activePrescriptions, icon: FileText, color: "text-green-600", bg: "bg-green-50" },
-  { title: "New This Week", value: mockStats.newThisWeek, icon: TrendingUp, color: "text-purple-600", bg: "bg-purple-50" },
+  {
+    title: "Total Patients",
+    value: "127",
+    badge: "+8.2%",
+    trend: "up" as const,
+    description: "Growing steadily",
+    subtitle: "Patients for the last 6 months",
+  },
+  {
+    title: "Pending Consultations",
+    value: "8",
+    badge: "-20%",
+    trend: "down" as const,
+    description: "Down 20% this period",
+    subtitle: "Needs scheduling attention",
+  },
+  {
+    title: "Active Prescriptions",
+    value: "43",
+    badge: "+12.5%",
+    trend: "up" as const,
+    description: "Strong prescription rate",
+    subtitle: "Activity exceeds targets",
+  },
+  {
+    title: "New This Week",
+    value: "5",
+    badge: "+4.5%",
+    trend: "up" as const,
+    description: "Steady performance",
+    subtitle: "Meets growth projections",
+  },
 ];
 
 export default function DashboardPage() {
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {statCards.map((stat) => (
-          <Card key={stat.title}>
-            <CardContent className="flex items-center gap-4 p-6">
-              <div className={`rounded-lg p-3 ${stat.bg}`}>
-                <stat.icon className={`h-6 w-6 ${stat.color}`} />
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">{stat.title}</p>
-                <p className="text-2xl font-bold">{stat.value}</p>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
-      <div className="flex flex-wrap gap-3">
-        <Link href="/patients/new">
-          <Button>
-            <Plus className="mr-2 h-4 w-4" />
-            Add Patient
-          </Button>
-        </Link>
-        <Link href="/prescriptions">
-          <Button variant="outline">
-            <ClipboardPlus className="mr-2 h-4 w-4" />
-            View Prescriptions
-          </Button>
-        </Link>
-      </div>
-
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">Recent Activity</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div style={{ width: "100%" }}>
-            <DataGrid
-              rows={mockActivity}
-              columns={activityColumns}
-              autoHeight
-              disableRowSelectionOnClick
-              pageSizeOptions={[5, 10]}
-              initialState={{ pagination: { paginationModel: { pageSize: 5 } } }}
-              density="compact"
-              sx={{
-                "& .MuiDataGrid-cell:focus": { outline: "none" },
-                "& .MuiDataGrid-columnHeader:focus": { outline: "none" },
-              }}
-            />
+      <Tabs defaultValue="overview" className="space-y-4">
+        <div className="w-full overflow-x-auto pb-2">
+          <TabsList>
+            <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="analytics" disabled>
+              Analytics
+            </TabsTrigger>
+            <TabsTrigger value="reports" disabled>
+              Reports
+            </TabsTrigger>
+          </TabsList>
+        </div>
+        <TabsContent value="overview" className="space-y-4">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {statCards.map((stat) => (
+              <Card key={stat.title}>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium text-muted-foreground">
+                    {stat.title}
+                  </CardTitle>
+                  <Badge
+                    variant="secondary"
+                    className="gap-1 rounded-full text-xs font-medium"
+                  >
+                    {stat.trend === "up" ? (
+                      <TrendingUp className="h-3 w-3" />
+                    ) : (
+                      <TrendingDown className="h-3 w-3" />
+                    )}
+                    {stat.badge}
+                  </Badge>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div className="text-3xl font-bold tracking-tight">
+                    {stat.value}
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium flex items-center gap-1">
+                      {stat.description}
+                      {stat.trend === "up" ? (
+                        <TrendingUp className="h-3.5 w-3.5" />
+                      ) : (
+                        <TrendingDown className="h-3.5 w-3.5" />
+                      )}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {stat.subtitle}
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
           </div>
-        </CardContent>
-      </Card>
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-7">
+            <Card className="col-span-1 lg:col-span-4">
+              <CardHeader>
+                <CardTitle>Patient Intake Overview</CardTitle>
+              </CardHeader>
+              <CardContent className="pl-2">
+                <Overview />
+              </CardContent>
+            </Card>
+            <Card className="col-span-1 lg:col-span-3">
+              <CardHeader>
+                <CardTitle>Recent Activity</CardTitle>
+                <CardDescription>Latest actions across the portal.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <RecentActivity />
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

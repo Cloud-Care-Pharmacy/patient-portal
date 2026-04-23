@@ -1,10 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import {
-  DataGrid,
-  type GridColDef,
-} from "@mui/x-data-grid";
+import { DataGrid, type GridColDef } from "@mui/x-data-grid";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -36,6 +33,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { PageHeader } from "@/components/shared/PageHeader";
+import { dataGridSx } from "@/lib/utils";
 import { Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import type { Staff } from "@/types";
@@ -93,9 +91,7 @@ export default function AdminPage() {
             if (!v) return;
             setStaff((prev) =>
               prev.map((s) =>
-                s.id === params.row.id
-                  ? { ...s, role: v as Staff["role"] }
-                  : s
+                s.id === params.row.id ? { ...s, role: v as Staff["role"] } : s
               )
             );
             toast.success(`Role updated to ${v}`);
@@ -116,8 +112,7 @@ export default function AdminPage() {
       field: "createdAt",
       headerName: "Added",
       width: 120,
-      valueFormatter: (value: string) =>
-        new Date(value).toLocaleDateString("en-AU"),
+      valueFormatter: (value: string) => new Date(value).toLocaleDateString("en-AU"),
     },
     {
       field: "actions",
@@ -126,24 +121,22 @@ export default function AdminPage() {
       sortable: false,
       renderCell: (params) => (
         <AlertDialog>
-          <AlertDialogTrigger className="inline-flex items-center justify-center rounded-lg p-2 hover:bg-slate-100">
+          <AlertDialogTrigger className="inline-flex items-center justify-center rounded-lg p-2 hover:bg-accent">
             <Trash2 className="h-4 w-4 text-red-500" />
           </AlertDialogTrigger>
           <AlertDialogContent>
             <AlertDialogHeader>
               <AlertDialogTitle>Remove staff member?</AlertDialogTitle>
               <AlertDialogDescription>
-                This will remove {params.row.name} from the system. This action
-                cannot be undone.
+                This will remove {params.row.name} from the system. This action cannot
+                be undone.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel>Cancel</AlertDialogCancel>
               <AlertDialogAction
                 onClick={() => {
-                  setStaff((prev) =>
-                    prev.filter((s) => s.id !== params.row.id)
-                  );
+                  setStaff((prev) => prev.filter((s) => s.id !== params.row.id));
                   toast.success(`${params.row.name} removed`);
                 }}
                 className="bg-red-600 hover:bg-red-700"
@@ -191,8 +184,8 @@ export default function AdminPage() {
               <DialogHeader>
                 <DialogTitle>Add Staff Member</DialogTitle>
                 <DialogDescription>
-                  Add a new staff member to the system. They will be able to log
-                  in with their Google account.
+                  Add a new staff member to the system. They will be able to log in with
+                  their Google account.
                 </DialogDescription>
               </DialogHeader>
               <div className="space-y-4 py-4">
@@ -217,9 +210,7 @@ export default function AdminPage() {
                   <Label>Role</Label>
                   <Select
                     value={newRole}
-                    onValueChange={(v) =>
-                      setNewRole(v as "admin" | "doctor" | "staff")
-                    }
+                    onValueChange={(v) => setNewRole(v as "admin" | "doctor" | "staff")}
                   >
                     <SelectTrigger>
                       <SelectValue />
@@ -244,8 +235,8 @@ export default function AdminPage() {
       />
 
       <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-4 text-sm text-yellow-800">
-        This page shows placeholder data. Connect the staff management backend
-        to persist changes.
+        This page shows placeholder data. Connect the staff management backend to
+        persist changes.
       </div>
 
       <div style={{ width: "100%" }}>
@@ -253,15 +244,13 @@ export default function AdminPage() {
           rows={staff}
           columns={columns}
           autoHeight
+          checkboxSelection
           disableRowSelectionOnClick
           pageSizeOptions={[10, 25]}
           initialState={{
             pagination: { paginationModel: { pageSize: 10 } },
           }}
-          sx={{
-            "& .MuiDataGrid-cell:focus": { outline: "none" },
-            "& .MuiDataGrid-columnHeader:focus": { outline: "none" },
-          }}
+          sx={dataGridSx}
         />
       </div>
     </div>

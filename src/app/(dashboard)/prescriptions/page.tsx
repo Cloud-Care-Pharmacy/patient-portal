@@ -24,6 +24,7 @@ import { EmptyState } from "@/components/shared/EmptyState";
 import { ErrorBoundary } from "@/components/shared/ErrorBoundary";
 import { usePatients } from "@/lib/hooks/use-patients";
 import { usePrescriptions } from "@/lib/hooks/use-prescriptions";
+import { dataGridSx } from "@/lib/utils";
 import type { PatientMapping, ParchmentPrescription } from "@/types";
 
 const ENTITY_ID = process.env.NEXT_PUBLIC_DEFAULT_ENTITY_ID ?? "";
@@ -36,15 +37,13 @@ const prescriptionColumns: GridColDef<ParchmentPrescription>[] = [
     field: "issuedAt",
     headerName: "Issued",
     width: 120,
-    valueFormatter: (value: string) =>
-      new Date(value).toLocaleDateString("en-AU"),
+    valueFormatter: (value: string) => new Date(value).toLocaleDateString("en-AU"),
   },
   {
     field: "expiresAt",
     headerName: "Expires",
     width: 120,
-    valueFormatter: (value: string) =>
-      new Date(value).toLocaleDateString("en-AU"),
+    valueFormatter: (value: string) => new Date(value).toLocaleDateString("en-AU"),
   },
   {
     field: "status",
@@ -80,9 +79,7 @@ function PrescriptionDetail({
             <StatusBadge status={prescription.status} />
           </div>
           <div>
-            <p className="text-sm font-medium text-muted-foreground">
-              Prescribed By
-            </p>
+            <p className="text-sm font-medium text-muted-foreground">Prescribed By</p>
             <p>{prescription.prescriberName ?? "—"}</p>
           </div>
           <div>
@@ -90,12 +87,8 @@ function PrescriptionDetail({
             <p>{new Date(prescription.issuedAt).toLocaleDateString("en-AU")}</p>
           </div>
           <div>
-            <p className="text-sm font-medium text-muted-foreground">
-              Expires
-            </p>
-            <p>
-              {new Date(prescription.expiresAt).toLocaleDateString("en-AU")}
-            </p>
+            <p className="text-sm font-medium text-muted-foreground">Expires</p>
+            <p>{new Date(prescription.expiresAt).toLocaleDateString("en-AU")}</p>
           </div>
           {prescription.notes && (
             <div>
@@ -145,6 +138,7 @@ function PrescriptionGrid({ patientId }: { patientId: string }) {
         rows={prescriptions}
         columns={prescriptionColumns}
         autoHeight
+        checkboxSelection
         disableRowSelectionOnClick
         pageSizeOptions={[10, 25]}
         initialState={{
@@ -154,15 +148,11 @@ function PrescriptionGrid({ patientId }: { patientId: string }) {
           setSelected(params.row)
         }
         sx={{
+          ...dataGridSx,
           cursor: "pointer",
-          "& .MuiDataGrid-cell:focus": { outline: "none" },
-          "& .MuiDataGrid-columnHeader:focus": { outline: "none" },
         }}
       />
-      <PrescriptionDetail
-        prescription={selected}
-        onClose={() => setSelected(null)}
-      />
+      <PrescriptionDetail prescription={selected} onClose={() => setSelected(null)} />
     </>
   );
 }

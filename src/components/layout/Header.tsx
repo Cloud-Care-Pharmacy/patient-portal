@@ -1,8 +1,12 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, PanelLeftClose, PanelLeftOpen, Search } from "lucide-react";
 import Link from "next/link";
+import { Separator } from "@/components/ui/separator";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { useSidebarState } from "@/components/providers/SidebarProvider";
 
 const routeTitles: Record<string, string> = {
   "/dashboard": "Dashboard",
@@ -15,11 +19,9 @@ const routeTitles: Record<string, string> = {
 
 export function Header() {
   const pathname = usePathname();
+  const { collapsed, toggle } = useSidebarState();
 
   const segments = pathname.split("/").filter(Boolean);
-  const title =
-    routeTitles[pathname] ??
-    (segments.length > 1 ? "Patient Detail" : "Dashboard");
 
   const breadcrumbs = segments.map((seg, i) => {
     const href = "/" + segments.slice(0, i + 1).join("/");
@@ -28,29 +30,49 @@ export function Header() {
   });
 
   return (
-    <header className="border-b bg-white px-6 py-4 lg:pl-6 pl-14">
-      {breadcrumbs.length > 1 && (
-        <nav className="flex items-center gap-1 text-sm text-muted-foreground mb-1">
-          {breadcrumbs.map((crumb, i) => (
-            <span key={crumb.href} className="flex items-center gap-1">
-              {i > 0 && <ChevronRight className="h-3 w-3" />}
-              {i < breadcrumbs.length - 1 ? (
-                <Link
-                  href={crumb.href}
-                  className="hover:text-foreground transition-colors capitalize"
-                >
-                  {crumb.label}
-                </Link>
-              ) : (
-                <span className="text-foreground capitalize">
-                  {crumb.label}
-                </span>
-              )}
-            </span>
-          ))}
-        </nav>
-      )}
-      <h1 className="text-xl font-bold tracking-tight">{title}</h1>
+    <header className="z-50 h-14">
+      <div className="flex h-full items-center gap-3 px-4">
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={toggle}
+          className="hidden lg:inline-flex h-8 w-8"
+        >
+          {collapsed ? (
+            <PanelLeftOpen className="h-4 w-4" />
+          ) : (
+            <PanelLeftClose className="h-4 w-4" />
+          )}
+        </Button>
+        <div className="h-4 w-px shrink-0 bg-border" />
+        {breadcrumbs.length > 0 && (
+          <nav className="flex items-center gap-1 text-sm text-muted-foreground">
+            {breadcrumbs.map((crumb, i) => (
+              <span key={crumb.href} className="flex items-center gap-1">
+                {i > 0 && <ChevronRight className="h-3 w-3" />}
+                {i < breadcrumbs.length - 1 ? (
+                  <Link
+                    href={crumb.href}
+                    className="hover:text-foreground transition-colors capitalize"
+                  >
+                    {crumb.label}
+                  </Link>
+                ) : (
+                  <span className="text-foreground font-medium capitalize">
+                    {crumb.label}
+                  </span>
+                )}
+              </span>
+            ))}
+          </nav>
+        )}
+        <div className="ml-auto flex items-center gap-3">
+          <div className="relative hidden md:block">
+            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input type="search" placeholder="Search..." className="w-64 pl-8 h-9" />
+          </div>
+        </div>
+      </div>
     </header>
   );
 }

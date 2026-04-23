@@ -1,8 +1,9 @@
 "use client";
 
 import { use } from "react";
+import Link from "next/link";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { PageHeader } from "@/components/shared/PageHeader";
@@ -14,6 +15,17 @@ import { usePatientEmails } from "@/lib/hooks/use-emails";
 import { DataGrid, type GridColDef } from "@mui/x-data-grid";
 import type { ParchmentPrescription, EmailRecord } from "@/types";
 import { usePatients } from "@/lib/hooks/use-patients";
+import { NotesTab } from "@/components/patients/NotesTab";
+import {
+  ArrowLeft,
+  Mail,
+  Phone,
+  MapPin,
+  Calendar,
+  User,
+  CreditCard,
+  Hash,
+} from "lucide-react";
 
 const ENTITY_ID = process.env.NEXT_PUBLIC_DEFAULT_ENTITY_ID ?? "";
 
@@ -24,15 +36,13 @@ const prescriptionColumns: GridColDef<ParchmentPrescription>[] = [
     field: "issuedAt",
     headerName: "Issued",
     width: 120,
-    valueFormatter: (value: string) =>
-      new Date(value).toLocaleDateString("en-AU"),
+    valueFormatter: (value: string) => new Date(value).toLocaleDateString("en-AU"),
   },
   {
     field: "expiresAt",
     headerName: "Expires",
     width: 120,
-    valueFormatter: (value: string) =>
-      new Date(value).toLocaleDateString("en-AU"),
+    valueFormatter: (value: string) => new Date(value).toLocaleDateString("en-AU"),
   },
   {
     field: "status",
@@ -114,8 +124,11 @@ function PrescriptionsTab({ patientId }: { patientId: string }) {
       }}
       density="compact"
       sx={{
+        border: "none",
         "& .MuiDataGrid-cell:focus": { outline: "none" },
         "& .MuiDataGrid-columnHeader:focus": { outline: "none" },
+        "& .MuiDataGrid-columnHeaders": { backgroundColor: "var(--secondary)" },
+        "& .MuiDataGrid-row:hover": { backgroundColor: "var(--secondary)" },
       }}
     />
   );
@@ -135,9 +148,7 @@ function EmailsTab({ patientId }: { patientId: string }) {
 
   if (error)
     return (
-      <div className="text-red-600 text-sm">
-        Failed to load emails: {error.message}
-      </div>
+      <div className="text-red-600 text-sm">Failed to load emails: {error.message}</div>
     );
 
   const emails = data?.data?.emails ?? [];
@@ -163,8 +174,11 @@ function EmailsTab({ patientId }: { patientId: string }) {
       }}
       density="compact"
       sx={{
+        border: "none",
         "& .MuiDataGrid-cell:focus": { outline: "none" },
         "& .MuiDataGrid-columnHeader:focus": { outline: "none" },
+        "& .MuiDataGrid-columnHeaders": { backgroundColor: "var(--secondary)" },
+        "& .MuiDataGrid-row:hover": { backgroundColor: "var(--secondary)" },
       }}
     />
   );
@@ -176,6 +190,26 @@ function ConsultationsTab() {
       title="Consultations coming soon"
       description="Connect the consultation backend to see real data here."
     />
+  );
+}
+
+function DetailField({
+  icon,
+  label,
+  value,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  value: string | null | undefined;
+}) {
+  return (
+    <div className="flex items-start gap-3">
+      <div className="text-muted-foreground mt-0.5">{icon}</div>
+      <div className="min-w-0">
+        <p className="text-xs font-medium text-muted-foreground">{label}</p>
+        <p className="text-sm truncate">{value || "Not available"}</p>
+      </div>
+    </div>
   );
 }
 
@@ -191,89 +225,100 @@ export default function PatientDetailPage({
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Patient Detail"
+        title="Patient Profile"
         breadcrumbs={[
           { label: "Patients", href: "/patients" },
           { label: patient?.original_email ?? id },
         ]}
       />
 
-      {/* Profile Header */}
+      {/* Profile Header — always visible */}
       <Card>
         <CardContent className="p-6">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div className="space-y-1">
-              <h2 className="text-xl font-semibold">
-                {patient?.original_email ?? "Loading…"}
-              </h2>
-              <p className="text-sm text-muted-foreground">
-                Generated email:{" "}
-                <code className="text-xs bg-slate-100 px-1 py-0.5 rounded">
-                  {patient?.generated_email ?? "—"}
-                </code>
-              </p>
-              <p className="text-sm text-muted-foreground">
-                PMS ID: {patient?.halaxy_patient_id ?? "Not linked"}
-              </p>
+          <div className="flex flex-col gap-6">
+            {/* Top row: name + meta */}
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex items-center gap-3">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
+                  <User className="h-6 w-6" />
+                </div>
+                <div>
+                  <h2 className="text-xl font-semibold">
+                    {patient?.original_email ?? "Loading…"}
+                  </h2>
+                  <p className="text-sm text-muted-foreground">
+                    Generated email:{" "}
+                    <code className="text-xs bg-secondary px-1 py-0.5 rounded">
+                      {patient?.generated_email ?? "—"}
+                    </code>
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <Badge variant="outline">ID: {id.slice(0, 8)}…</Badge>
+                {patient?.created_at && (
+                  <span className="text-xs text-muted-foreground">
+                    Created {new Date(patient.created_at).toLocaleDateString("en-AU")}
+                  </span>
+                )}
+              </div>
             </div>
-            <div className="flex items-center gap-2">
-              <Badge variant="outline">ID: {id.slice(0, 8)}…</Badge>
-              {patient?.created_at && (
-                <span className="text-xs text-muted-foreground">
-                  Created{" "}
-                  {new Date(patient.created_at).toLocaleDateString("en-AU")}
-                </span>
-              )}
+
+            {/* Detail fields grid */}
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              <DetailField
+                icon={<Mail className="h-4 w-4" />}
+                label="Email"
+                value={patient?.original_email}
+              />
+              <DetailField
+                icon={<Phone className="h-4 w-4" />}
+                label="Phone"
+                value={null}
+              />
+              <DetailField
+                icon={<Calendar className="h-4 w-4" />}
+                label="Date of Birth"
+                value={null}
+              />
+              <DetailField
+                icon={<User className="h-4 w-4" />}
+                label="Gender"
+                value={null}
+              />
+              <DetailField
+                icon={<MapPin className="h-4 w-4" />}
+                label="Address"
+                value={null}
+              />
+              <DetailField
+                icon={<CreditCard className="h-4 w-4" />}
+                label="Medicare Number"
+                value={null}
+              />
+              <DetailField
+                icon={<Hash className="h-4 w-4" />}
+                label="PMS Patient ID"
+                value={patient?.halaxy_patient_id}
+              />
             </div>
           </div>
         </CardContent>
       </Card>
 
       {/* Tabs */}
-      <Tabs defaultValue="prescriptions" className="space-y-4">
+      <Tabs defaultValue="notes" className="space-y-4">
         <TabsList>
-          <TabsTrigger value="overview">Overview</TabsTrigger>
+          <TabsTrigger value="notes">Notes</TabsTrigger>
           <TabsTrigger value="prescriptions">Prescriptions</TabsTrigger>
           <TabsTrigger value="documents">Documents</TabsTrigger>
           <TabsTrigger value="consultations">Consultations</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="overview">
-          <Card>
-            <CardHeader>
-              <CardTitle>Patient Information</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">
-                    Email
-                  </p>
-                  <p className="text-sm">{patient?.original_email ?? "—"}</p>
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">
-                    Entity ID
-                  </p>
-                  <p className="text-sm">{patient?.entity_id ?? "—"}</p>
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">
-                    Patient ID
-                  </p>
-                  <p className="text-sm font-mono text-xs">{id}</p>
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">
-                    PMS Patient ID
-                  </p>
-                  <p className="text-sm">
-                    {patient?.halaxy_patient_id || "Not linked"}
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+        <TabsContent value="notes">
+          <ErrorBoundary>
+            <NotesTab patientId={id} />
+          </ErrorBoundary>
         </TabsContent>
 
         <TabsContent value="prescriptions">

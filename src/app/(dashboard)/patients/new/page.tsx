@@ -94,7 +94,9 @@ const step7Schema = z.object({
 });
 
 const step8Schema = z.object({
-  safetyAcknowledgment: z.string().min(1, "You must acknowledge the safety information"),
+  safetyAcknowledgment: z
+    .string()
+    .min(1, "You must acknowledge the safety information"),
 });
 
 const fullSchema = step1Schema
@@ -199,7 +201,11 @@ function Step1PersonalInfo() {
       </div>
       <div className="space-y-2">
         <Label htmlFor="gender">Gender *</Label>
-        <Input id="gender" {...register("gender")} placeholder="e.g. Male, Female, Other" />
+        <Input
+          id="gender"
+          {...register("gender")}
+          placeholder="e.g. Male, Female, Other"
+        />
         {errors.gender && (
           <p className="text-sm text-red-500">{errors.gender.message}</p>
         )}
@@ -208,18 +214,14 @@ function Step1PersonalInfo() {
         <Label htmlFor="streetAddress">Street Address *</Label>
         <Input id="streetAddress" {...register("streetAddress")} />
         {errors.streetAddress && (
-          <p className="text-sm text-red-500">
-            {errors.streetAddress.message}
-          </p>
+          <p className="text-sm text-red-500">{errors.streetAddress.message}</p>
         )}
       </div>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <div className="space-y-2">
           <Label htmlFor="city">City *</Label>
           <Input id="city" {...register("city")} />
-          {errors.city && (
-            <p className="text-sm text-red-500">{errors.city.message}</p>
-          )}
+          {errors.city && <p className="text-sm text-red-500">{errors.city.message}</p>}
         </div>
         <div className="space-y-2">
           <Label htmlFor="state">State</Label>
@@ -265,10 +267,7 @@ function Step2SmokingStatus() {
   return (
     <div className="space-y-4">
       <Label>Have you ever smoked or vaped? *</Label>
-      <RadioGroup
-        value={value}
-        onValueChange={(v) => setValue("smokingStatus", v)}
-      >
+      <RadioGroup value={value} onValueChange={(v) => setValue("smokingStatus", v)}>
         {[
           { value: "current-smoker", label: "I currently smoke" },
           { value: "ex-smoker", label: "I used to smoke (ex-smoker)" },
@@ -298,19 +297,11 @@ function Step3SmokingHistory() {
     <div className="space-y-4">
       <div className="space-y-2">
         <Label htmlFor="cigarettesPerDay">Cigarettes per day</Label>
-        <Input
-          id="cigarettesPerDay"
-          type="number"
-          {...register("cigarettesPerDay")}
-        />
+        <Input id="cigarettesPerDay" type="number" {...register("cigarettesPerDay")} />
       </div>
       <div className="space-y-2">
         <Label htmlFor="yearsSmoked">Years smoked</Label>
-        <Input
-          id="yearsSmoked"
-          type="number"
-          {...register("yearsSmoked")}
-        />
+        <Input id="yearsSmoked" type="number" {...register("yearsSmoked")} />
       </div>
       <div className="space-y-2">
         <Label htmlFor="timesTriedQuitting">
@@ -327,13 +318,8 @@ function Step3SmokingHistory() {
         <Input id="lastCigarette" {...register("lastCigarette")} />
       </div>
       <div className="space-y-2">
-        <Label htmlFor="quitMethodExplanation">
-          Quit methods tried (explain)
-        </Label>
-        <Textarea
-          id="quitMethodExplanation"
-          {...register("quitMethodExplanation")}
-        />
+        <Label htmlFor="quitMethodExplanation">Quit methods tried (explain)</Label>
+        <Textarea id="quitMethodExplanation" {...register("quitMethodExplanation")} />
       </div>
     </div>
   );
@@ -350,10 +336,7 @@ function Step4VapingStatus() {
   return (
     <div className="space-y-4">
       <Label>Do you currently vape? *</Label>
-      <RadioGroup
-        value={value}
-        onValueChange={(v) => setValue("vapingStatus", v)}
-      >
+      <RadioGroup value={value} onValueChange={(v) => setValue("vapingStatus", v)}>
         {[
           { value: "yes", label: "Yes" },
           { value: "no", label: "No" },
@@ -446,9 +429,7 @@ function Step6MedicalHistory() {
           </div>
         </RadioGroup>
         {errors.hasMedicalConditions && (
-          <p className="text-sm text-red-500">
-            {errors.hasMedicalConditions.message}
-          </p>
+          <p className="text-sm text-red-500">{errors.hasMedicalConditions.message}</p>
         )}
       </div>
 
@@ -502,9 +483,7 @@ function Step6MedicalHistory() {
           </div>
         </RadioGroup>
         {errors.takesMedication && (
-          <p className="text-sm text-red-500">
-            {errors.takesMedication.message}
-          </p>
+          <p className="text-sm text-red-500">{errors.takesMedication.message}</p>
         )}
       </div>
 
@@ -533,13 +512,8 @@ function Step6MedicalHistory() {
             ))}
           </div>
           <div className="space-y-2 pt-2">
-            <Label htmlFor="medicationsList">
-              List all current medications
-            </Label>
-            <Textarea
-              id="medicationsList"
-              {...register("medicationsList")}
-            />
+            <Label htmlFor="medicationsList">List all current medications</Label>
+            <Textarea id="medicationsList" {...register("medicationsList")} />
           </div>
         </div>
       )}
@@ -563,9 +537,7 @@ function Step6MedicalHistory() {
           </div>
         </RadioGroup>
         {errors.cardiovascular && (
-          <p className="text-sm text-red-500">
-            {errors.cardiovascular.message}
-          </p>
+          <p className="text-sm text-red-500">{errors.cardiovascular.message}</p>
         )}
       </div>
 
@@ -595,10 +567,7 @@ function Step6MedicalHistory() {
 
       <div className="space-y-2">
         <Label htmlFor="additionalNotes">Additional notes</Label>
-        <Textarea
-          id="additionalNotes"
-          {...register("additionalNotes")}
-        />
+        <Textarea id="additionalNotes" {...register("additionalNotes")} />
       </div>
     </div>
   );
@@ -654,17 +623,15 @@ function Step7IDVerification() {
     <div className="space-y-4">
       <Label>Upload your proof of age document *</Label>
       <p className="text-sm text-muted-foreground">
-        Please upload a photo of your driver's licence or other government-issued
-        ID. Accepted formats: JPEG, PNG, HEIC, WebP, PDF. Max 10 MB.
+        Please upload a photo of your driver's licence or other government-issued ID.
+        Accepted formats: JPEG, PNG, HEIC, WebP, PDF. Max 10 MB.
       </p>
       <Input
         type="file"
         accept=".jpg,.jpeg,.png,.heic,.heif,.webp,.pdf"
         onChange={handleFile}
       />
-      {fileName && (
-        <p className="text-sm text-green-600">✓ Uploaded: {fileName}</p>
-      )}
+      {fileName && <p className="text-sm text-green-600">✓ Uploaded: {fileName}</p>}
       {errors.proofOfAge && (
         <p className="text-sm text-red-500">{errors.proofOfAge.message}</p>
       )}
@@ -682,27 +649,25 @@ function Step8Consent() {
 
   return (
     <div className="space-y-6">
-      <div className="rounded-lg border p-4 bg-slate-50 space-y-3 text-sm">
+      <div className="rounded-lg border p-4 bg-secondary space-y-3 text-sm">
         <p className="font-semibold">Safety Information</p>
         <ul className="list-disc pl-5 space-y-1 text-muted-foreground">
           <li>
-            Nicotine is a highly addictive substance and should only be used as
-            part of a supervised quit-smoking program.
+            Nicotine is a highly addictive substance and should only be used as part of
+            a supervised quit-smoking program.
+          </li>
+          <li>Keep nicotine products out of reach of children and pets.</li>
+          <li>
+            Do not use nicotine products if you are pregnant or breastfeeding without
+            medical advice.
           </li>
           <li>
-            Keep nicotine products out of reach of children and pets.
+            If you experience any adverse effects, stop using the product and consult
+            your doctor or pharmacist immediately.
           </li>
           <li>
-            Do not use nicotine products if you are pregnant or breastfeeding
-            without medical advice.
-          </li>
-          <li>
-            If you experience any adverse effects, stop using the product and
-            consult your doctor or pharmacist immediately.
-          </li>
-          <li>
-            You understand that providing false medical information may affect
-            your treatment and safety.
+            You understand that providing false medical information may affect your
+            treatment and safety.
           </li>
         </ul>
       </div>
@@ -715,14 +680,12 @@ function Step8Consent() {
           }
         />
         <Label htmlFor="safetyAck" className="leading-snug">
-          I acknowledge the safety information above and confirm that all
-          information provided is accurate to the best of my knowledge. *
+          I acknowledge the safety information above and confirm that all information
+          provided is accurate to the best of my knowledge. *
         </Label>
       </div>
       {errors.safetyAcknowledgment && (
-        <p className="text-sm text-red-500">
-          {errors.safetyAcknowledgment.message}
-        </p>
+        <p className="text-sm text-red-500">{errors.safetyAcknowledgment.message}</p>
       )}
     </div>
   );
@@ -780,8 +743,7 @@ export default function NewPatientPage() {
   }, [methods]);
 
   // Skip smoking history if never smoked
-  const shouldSkipSmokingHistory =
-    watchSmokingStatus === "never-smoked-or-vaped";
+  const shouldSkipSmokingHistory = watchSmokingStatus === "never-smoked-or-vaped";
   // Skip vaping history if not vaping
   const shouldSkipVapingHistory = watchVapingStatus === "no";
 
@@ -854,9 +816,7 @@ export default function NewPatientPage() {
       toast.success("Patient intake submitted successfully!");
       router.push(`/patients/${data.patientId}`);
     } catch (err) {
-      toast.error(
-        err instanceof Error ? err.message : "Failed to submit intake"
-      );
+      toast.error(err instanceof Error ? err.message : "Failed to submit intake");
     } finally {
       setSubmitting(false);
     }
@@ -880,8 +840,7 @@ export default function NewPatientPage() {
       <div className="space-y-2">
         <div className="flex items-center justify-between text-sm text-muted-foreground">
           <span>
-            Step {effectiveStep + 1} of {totalSteps}:{" "}
-            {stepLabels[effectiveStep]}
+            Step {effectiveStep + 1} of {totalSteps}: {stepLabels[effectiveStep]}
           </span>
           <span>{Math.round(progressPct)}%</span>
         </div>
@@ -893,9 +852,7 @@ export default function NewPatientPage() {
           <CardHeader>
             <CardTitle>{stepLabels[effectiveStep]}</CardTitle>
             {effectiveStep === 0 && (
-              <CardDescription>
-                Please provide your personal details.
-              </CardDescription>
+              <CardDescription>Please provide your personal details.</CardDescription>
             )}
           </CardHeader>
           <CardContent>
@@ -905,11 +862,7 @@ export default function NewPatientPage() {
 
         {/* Navigation */}
         <div className="flex justify-between">
-          <Button
-            variant="outline"
-            onClick={prevStep}
-            disabled={effectiveStep === 0}
-          >
+          <Button variant="outline" onClick={prevStep} disabled={effectiveStep === 0}>
             Previous
           </Button>
           {isLastStep ? (

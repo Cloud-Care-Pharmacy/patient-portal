@@ -4,6 +4,7 @@ import { Sidebar } from "@/components/layout/Sidebar";
 import { Header } from "@/components/layout/Header";
 import { QueryProvider } from "@/components/providers/QueryProvider";
 import { MuiThemeProvider } from "@/components/providers/MuiThemeProvider";
+import { SidebarStateProvider } from "@/components/providers/SidebarProvider";
 
 export default async function DashboardLayout({
   children,
@@ -16,13 +17,15 @@ export default async function DashboardLayout({
   return (
     <QueryProvider>
       <MuiThemeProvider>
-        <div className="flex h-screen overflow-hidden bg-slate-50">
-          <Sidebar user={user} />
-          <div className="flex flex-1 flex-col overflow-hidden">
-            <Header />
-            <main className="flex-1 overflow-y-auto p-6">{children}</main>
+        <SidebarStateProvider>
+          <div className="flex h-screen overflow-hidden bg-sidebar">
+            <Sidebar user={user} />
+            <div className="flex flex-1 flex-col overflow-hidden rounded-l-2xl border-t border-border bg-background shadow-sm my-2 mr-2">
+              <Header />
+              <main className="flex-1 overflow-y-auto px-4 py-6">{children}</main>
+            </div>
           </div>
-        </div>
+        </SidebarStateProvider>
       </MuiThemeProvider>
     </QueryProvider>
   );

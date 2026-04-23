@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useClerk } from "@clerk/nextjs";
-import { useState } from "react";
 import {
   LayoutDashboard,
   Users,
@@ -11,15 +10,22 @@ import {
   Calendar,
   Shield,
   LogOut,
-  PanelLeftClose,
-  PanelLeftOpen,
   Menu,
+  ChevronsUpDown,
+  Pill,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
-import { Separator } from "@/components/ui/separator";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { useSidebarState } from "@/components/providers/SidebarProvider";
 import type { UserRole } from "@/types";
 
 interface NavItem {
@@ -29,12 +35,36 @@ interface NavItem {
   roles?: UserRole[];
 }
 
-const navItems: NavItem[] = [
-  { label: "Dashboard", href: "/dashboard", icon: <LayoutDashboard className="h-5 w-5" /> },
-  { label: "Patients", href: "/patients", icon: <Users className="h-5 w-5" /> },
-  { label: "Prescriptions", href: "/prescriptions", icon: <FileText className="h-5 w-5" /> },
-  { label: "Consultations", href: "/consultations", icon: <Calendar className="h-5 w-5" /> },
-  { label: "Admin", href: "/admin", icon: <Shield className="h-5 w-5" />, roles: ["admin"] },
+const generalNav: NavItem[] = [
+  {
+    label: "Dashboard",
+    href: "/dashboard",
+    icon: <LayoutDashboard className="h-5 w-5" />,
+  },
+  {
+    label: "Patients",
+    href: "/patients",
+    icon: <Users className="h-5 w-5" />,
+  },
+  {
+    label: "Prescriptions",
+    href: "/prescriptions",
+    icon: <FileText className="h-5 w-5" />,
+  },
+  {
+    label: "Consultations",
+    href: "/consultations",
+    icon: <Calendar className="h-5 w-5" />,
+  },
+];
+
+const adminNav: NavItem[] = [
+  {
+    label: "Admin",
+    href: "/admin",
+    icon: <Shield className="h-5 w-5" />,
+    roles: ["admin"],
+  },
 ];
 
 interface SidebarProps {
@@ -48,18 +78,17 @@ interface SidebarProps {
 
 function NavLink({ item, collapsed }: { item: NavItem; collapsed: boolean }) {
   const pathname = usePathname();
-  const isActive =
-    pathname === item.href || pathname.startsWith(item.href + "/");
+  const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
 
   return (
     <Link
       href={item.href}
       className={cn(
-        "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+        "flex items-center gap-4 mx-3 px-4 py-2 text-sm rounded-lg transition-colors",
         isActive
-          ? "bg-slate-100 text-slate-900"
-          : "text-slate-600 hover:bg-slate-50 hover:text-slate-900",
-        collapsed && "justify-center px-2"
+          ? "bg-primary text-primary-foreground font-medium"
+          : "text-sidebar-foreground/60 hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground",
+        collapsed && "justify-center mx-1 px-3"
       )}
       title={collapsed ? item.label : undefined}
     >
@@ -69,13 +98,33 @@ function NavLink({ item, collapsed }: { item: NavItem; collapsed: boolean }) {
   );
 }
 
-function SidebarContent({
-  user,
+function NavGroup({
+  title,
+  items,
   collapsed,
-  onToggle,
-}: SidebarProps & { collapsed: boolean; onToggle?: () => void }) {
+}: {
+  title: string;
+  items: NavItem[];
+  collapsed: boolean;
+}) {
+  if (items.length === 0) return null;
+  return (
+    <div>
+      {!collapsed && (
+        <p className="px-5 pb-2 text-xs font-medium text-sidebar-foreground/40 uppercase tracking-wider">
+          {title}
+        </p>
+      )}
+      {items.map((item) => (
+        <NavLink key={item.href} item={item} collapsed={collapsed} />
+      ))}
+    </div>
+  );
+}
+
+function SidebarContent({ user, collapsed }: SidebarProps & { collapsed: boolean }) {
   const { signOut } = useClerk();
-  const filteredItems = navItems.filter(
+  const filteredAdmin = adminNav.filter(
     (item) => !item.roles || item.roles.includes(user.role)
   );
 
@@ -88,100 +137,112 @@ function SidebarContent({
 
   return (
     <div className="flex h-full flex-col">
-      {/* Header */}
-      <div className={cn("flex items-center gap-2 px-4 py-5", collapsed && "justify-center px-2")}>
-        {!collapsed && (
-          <span className="text-lg font-bold text-slate-900">Patient Portal</span>
+      {/* Team / App Header */}
+      <div
+        className={cn(
+          "flex items-center gap-3 px-4 py-4",
+          collapsed && "justify-center px-2"
         )}
-        {onToggle && (
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onToggle}
-            className={cn("h-8 w-8 text-slate-500", !collapsed && "ml-auto")}
-          >
-            {collapsed ? (
-              <PanelLeftOpen className="h-4 w-4" />
-            ) : (
-              <PanelLeftClose className="h-4 w-4" />
-            )}
-          </Button>
+      >
+        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+          <Pill className="h-4 w-4" />
+        </div>
+        {!collapsed && (
+          <div className="grid flex-1 text-sm leading-tight">
+            <span className="truncate font-semibold">Cloud Care</span>
+            <span className="truncate text-xs text-sidebar-foreground/50">
+              Pharmacy Portal
+            </span>
+          </div>
         )}
       </div>
 
-      <Separator />
-
       {/* Navigation */}
-      <nav className="flex-1 space-y-1 px-3 py-4">
-        {filteredItems.map((item) => (
-          <NavLink key={item.href} item={item} collapsed={collapsed} />
-        ))}
+      <nav className="flex-1 space-y-6 py-4">
+        <NavGroup title="General" items={generalNav} collapsed={collapsed} />
+        {filteredAdmin.length > 0 && (
+          <NavGroup title="Management" items={filteredAdmin} collapsed={collapsed} />
+        )}
       </nav>
 
-      <Separator />
-
       {/* User profile */}
-      <div className={cn("px-3 py-4", collapsed && "px-2")}>
-        <div
-          className={cn(
-            "flex items-center gap-3",
-            collapsed && "justify-center"
-          )}
-        >
-          <Avatar className="h-8 w-8">
-            <AvatarImage src={user.image ?? undefined} alt={user.name ?? ""} />
-            <AvatarFallback className="text-xs">{initials}</AvatarFallback>
-          </Avatar>
-          {!collapsed && (
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium truncate">{user.name}</p>
-              <p className="text-xs text-muted-foreground truncate">
-                {user.email}
-              </p>
-            </div>
-          )}
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => signOut({ redirectUrl: "/sign-in" })}
-            className="h-8 w-8 text-slate-500 hover:text-red-600"
-            title="Sign out"
+      <div className={cn("px-3 py-3", collapsed && "px-2")}>
+        <DropdownMenu>
+          <DropdownMenuTrigger
+            className={cn(
+              "flex w-full items-center gap-3 rounded-md p-2 text-sm hover:bg-sidebar-accent/50 transition-colors",
+              collapsed && "justify-center"
+            )}
           >
-            <LogOut className="h-4 w-4" />
-          </Button>
-        </div>
+            <Avatar className="h-8 w-8 rounded-lg">
+              <AvatarImage src={user.image ?? undefined} alt={user.name ?? ""} />
+              <AvatarFallback className="rounded-lg text-xs">{initials}</AvatarFallback>
+            </Avatar>
+            {!collapsed && (
+              <>
+                <div className="grid flex-1 text-start text-sm leading-tight">
+                  <span className="truncate font-semibold">{user.name}</span>
+                  <span className="truncate text-xs text-sidebar-foreground/50">
+                    {user.email}
+                  </span>
+                </div>
+                <ChevronsUpDown className="ml-auto h-4 w-4 text-sidebar-foreground/50" />
+              </>
+            )}
+          </DropdownMenuTrigger>
+          <DropdownMenuContent side="right" align="end" className="w-56">
+            <DropdownMenuLabel className="p-0 font-normal">
+              <div className="flex items-center gap-2 px-2 py-1.5 text-sm">
+                <Avatar className="h-8 w-8 rounded-lg">
+                  <AvatarImage src={user.image ?? undefined} alt={user.name ?? ""} />
+                  <AvatarFallback className="rounded-lg text-xs">
+                    {initials}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="grid flex-1 text-start text-sm leading-tight">
+                  <span className="truncate font-semibold">{user.name}</span>
+                  <span className="truncate text-xs text-muted-foreground">
+                    {user.email}
+                  </span>
+                </div>
+              </div>
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              className="text-destructive focus:text-destructive"
+              onClick={() => signOut({ redirectUrl: "/sign-in" })}
+            >
+              <LogOut className="mr-2 h-4 w-4" />
+              Sign out
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </div>
   );
 }
 
 export function Sidebar({ user }: SidebarProps) {
-  const [collapsed, setCollapsed] = useState(false);
+  const { collapsed } = useSidebarState();
 
   return (
     <>
       {/* Desktop sidebar */}
       <aside
         className={cn(
-          "hidden lg:flex flex-col border-r bg-white transition-all duration-200",
-          collapsed ? "w-[68px]" : "w-64"
+          "hidden lg:flex flex-col bg-sidebar transition-all duration-200",
+          collapsed ? "w-17" : "w-64"
         )}
       >
-        <SidebarContent
-          user={user}
-          collapsed={collapsed}
-          onToggle={() => setCollapsed(!collapsed)}
-        />
+        <SidebarContent user={user} collapsed={collapsed} />
       </aside>
 
       {/* Mobile sidebar (Sheet) */}
       <Sheet>
-        <SheetTrigger
-          className="lg:hidden fixed top-3 left-3 z-40 inline-flex items-center justify-center rounded-lg p-2 hover:bg-slate-100"
-        >
+        <SheetTrigger className="lg:hidden fixed top-3 left-3 z-40 inline-flex items-center justify-center rounded-lg p-2 hover:bg-accent">
           <Menu className="h-5 w-5" />
         </SheetTrigger>
-        <SheetContent side="left" className="w-64 p-0">
+        <SheetContent side="left" className="w-64 p-0 bg-sidebar">
           <SheetTitle className="sr-only">Navigation</SheetTitle>
           <SidebarContent user={user} collapsed={false} />
         </SheetContent>
