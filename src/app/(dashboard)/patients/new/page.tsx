@@ -623,7 +623,7 @@ function Step7IDVerification() {
     <div className="space-y-4">
       <Label>Upload your proof of age document *</Label>
       <p className="text-sm text-muted-foreground">
-        Please upload a photo of your driver's licence or other government-issued ID.
+        Please upload a photo of your driver&apos;s licence or other government-issued ID.
         Accepted formats: JPEG, PNG, HEIC, WebP, PDF. Max 10 MB.
       </p>
       <Input
