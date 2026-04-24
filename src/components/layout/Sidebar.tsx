@@ -67,6 +67,11 @@ const adminNav: NavItem[] = [
     icon: <Shield className="h-5 w-5" />,
     roles: ["admin"],
   },
+  {
+    label: "Profile",
+    href: "/profile",
+    icon: <User className="h-5 w-5" />,
+  },
 ];
 
 interface SidebarProps {
@@ -113,7 +118,7 @@ function NavGroup({
   return (
     <div>
       {!collapsed && (
-        <p className="px-5 pb-2 text-xs font-medium text-sidebar-foreground/40 uppercase tracking-wider">
+        <p className="overline px-5 pb-2">
           {title}
         </p>
       )}
