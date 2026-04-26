@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ErrorBoundary } from "@/components/shared/ErrorBoundary";
 import { usePatient, useLatestClinicalData } from "@/lib/hooks/use-patients";
@@ -40,7 +41,6 @@ export default function PatientLayoutClient({
   id,
   children,
 }: PatientLayoutClientProps) {
-  const router = useRouter();
   const pathname = usePathname();
   const { data: patientData, isLoading } = usePatient(id);
   const patient = patientData?.data?.patient;
@@ -112,9 +112,11 @@ export default function PatientLayoutClient({
           const count = tab.countKey ? tabCounts[tab.countKey] : undefined;
 
           return (
-            <button
+            <Link
               key={tab.segment}
-              onClick={() => router.push(href, { scroll: false })}
+              href={href}
+              scroll={false}
+              aria-current={isActive ? "page" : undefined}
               className={cn(
                 "inline-flex items-center justify-center gap-1.5 h-10 px-4.5 rounded-[10px] text-sm font-medium whitespace-nowrap transition-colors",
                 isActive
@@ -128,7 +130,7 @@ export default function PatientLayoutClient({
                   {count}
                 </span>
               )}
-            </button>
+            </Link>
           );
         })}
       </nav>

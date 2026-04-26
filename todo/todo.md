@@ -44,7 +44,7 @@ Use App Router for the route shell and TanStack Query for client cache, with exp
 
 ### Tasks
 
-- [ ] Convert patient tab navigation in `PatientLayoutClient` from `<button onClick={router.push}>` to `next/link` links styled as pills.
+- [x] Convert patient tab navigation in `PatientLayoutClient` from `<button onClick={router.push}>` to `next/link` links styled as pills.
   - Keep `scroll={false}` behavior if needed.
   - Rely on default Next.js prefetch for links in/near viewport.
   - Keep accessibility: active tab should expose `aria-current="page"` or equivalent.
