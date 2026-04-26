@@ -52,11 +52,11 @@ This tells us which bundles actually hurt initial load and prevents churn on com
 
 ## Phase 2 — Reduce route-level client boundaries
 
-_Progress 2026-04-26:_ Priority top-level dashboard routes and patient detail tab routes have been split into Server Component `page.tsx` wrappers and small `*Client.tsx` leaves where needed. Remaining route-level client boundaries from the audit are `admin/page.tsx` and `patients/new/page.tsx`.
+_Progress 2026-04-26:_ All authenticated `page.tsx` route-level client boundaries found in the audit have been split into Server Component wrappers and focused `*Client.tsx` leaves. Interactive admin and new-patient intake flows now live in client leaves instead of route pages.
 
 ### Tasks
 
-- [ ] Audit each authenticated `page.tsx` with `"use client"` and split it into:
+- [x] Audit each authenticated `page.tsx` with `"use client"` and split it into:
   - a default Server Component page for layout, metadata-safe route composition, and optional initial data fetching;
   - a small `*Client.tsx` leaf for state, event handlers, browser APIs, and TanStack Query hooks.
 - [x] Prioritize these pages first:
